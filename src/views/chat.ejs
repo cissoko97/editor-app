@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>chat</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="img/dolphin.png" type="image/x-icon" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/extraction.css">
+    <link rel="stylesheet" type="text/css" href="../bootstrap-4.1.2-dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../bootstrap-4.1.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../fontawesome-free-5.6.3-web/css/all.css">
+    <link rel="stylesheet" href="../fontawesome-free-5.6.3-web/js/all.js">
+    <link rel="stylesheet" href="../aos-master/dist/aos.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="fixed">
+        <button class="btn aurelle" onclick="showchat()" id="button" style="color:white">Discuss with collaborator   <i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+    </div>
+    <div id="chat-div">
+        <div class="p-3 input-group">
+            <h5 class="title">Message</h5>
+            <button class="ml-10 btn btn-danger" type="button" id="close-message" onclick="closechat()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+        </div>
+        <div id="feedback">
+
+        </div>
+        <p class="message-div p-2" id="output">
+
+        </p>
+        <div class="edit-message input-group">
+            <input type="text" placeholder="write a message" class="form-control " id="message">
+            <span class="input-group-btn">
+                    <button class="btn aurelle p-3" id="send"  style="color:white"><i class="fa fa-location-arrow" aria-hidden="true"></i></button>
+                </span>
+        </div>
+    </div>
+
+    <!--<script src="client.js"></script>-->
+    <script type="text/javascript">
+        var socket = io('/chat');
+
+        var feedback = document.getElementById('feedback');
+        var output = document.getElementById('output');
+        var sender = '<%=user.email%>';
+        console.log(sender);
+        var message = document.getElementById('message');
+        var send = document.getElementById('send');
+
+
+        //Chat
+        //Sending message to server
+        send.addEventListener('click', function() {
+            socket.emit('sending', {
+                sender: sender.value,
+                message: message.value
+            });
+            document.getElementById('message').value = '';
+            console.log("fefe");
+        });
+
+        //Receiving message coming from the server
+        socket.on('sending', function(data) {
+            feedback.innerHTML = "";
+            if (data.sender == sender.value) {
+                output.innerHTML += '<p style="color:white;background-color:rgb(30,30,30)" class="message-send mr-7 mt-3 ml-3 p-2">' + data.message + '</p>';
+            } else {
+                output.innerHTML += '<div><span><strong>' + data.sender + '</strong></span><p style="word-wrap: break-word;" class="message-send mr-3 mt-3 ml-7 p-2">' + data.message + '</p></div>';
+            }
+        });
+
+
+        //Sending the name of th sener to the server
+        message.addEventListener('keypress', function() {
+            socket.emit('typing', sender.value);
+        });
+
+        //Receiving of this name and c
+        socket.on('typing', function(data) {
+            feedback.innerHTML = '<p><em>' + data + ' is typing<em></p>';
+        });
+
+
+        function showchat() {
+            document.getElementById("chat-div").style.visibility = 'visible';
+            document.getElementById("button").style.visibility = 'hidden';
+        }
+
+        function closechat() {
+            document.getElementById("chat-div").style.visibility = 'hidden';
+            document.getElementById("button").style.visibility = 'visible';
+        }
+    </script>
+
+    <script src="../aos-master/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+
+</html>
