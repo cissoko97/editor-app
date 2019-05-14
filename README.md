@@ -11,6 +11,4 @@ Application collaboratif base sur ExpressJs, Socket.io et ejs
 ### NB:: nous utilisons comme base de donne rethinkdb
 
 
-Cloner le repos et fait un coup de npm install
-
-pour les collaborateur fait git pull et creer votre branche pour continuer a travailler
+Cloner le projet et npm install pour les dépendances
